@@ -1,4 +1,5 @@
 #include <iostream>
+#include "word2vec.h"
 
 using namespace std;
 
