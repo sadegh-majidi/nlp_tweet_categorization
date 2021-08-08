@@ -1,0 +1,4 @@
+*.o
+result
+files_twitter
+.idea
