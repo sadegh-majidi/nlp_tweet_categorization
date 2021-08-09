@@ -6,26 +6,31 @@
 #include <map>
 #include <regex>
 #include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 
 string file_address = "/home/solale/CLionProjects/nc-final-project/tweeter_data/near_washington_1015_1016_tweets.csv";
 
-vector<string> simple_tokenizer(string s) {
-    std::string delimiter = ",";
+vector<string> simple_tokenizer(string &s) {
+    char delimiter = ',';
     vector<string> tokenized;
-    size_t pos = 0;
     std::string token;
-    while ((pos = s.find(delimiter)) != std::string::npos) {
-        token = s.substr(0, pos);
-        s.erase(0, pos + delimiter.length());
-        tokenized.push_back(token);
-    }
+    int last = -1;
+    for(int i = 0; i < (int)s.size(); i++)
+        if(s[i] == delimiter && (s[last + 1] != '\"' || s[i - 1] == '\"'))
+        {
+            if(s[last + 1] == '\"')
+                tokenized.push_back(s.substr(last + 2, i - last - 3));
+            else
+                tokenized.push_back(s.substr(last + 1, i - last - 1));
+            last = i;
+        }
     return tokenized;
 }
 
 vector<string> extend_data(vector<string> tokens, int size) {
-    int extend_size = size - tokens.size();
+    int extend_size = size - (int)tokens.size();
     if (extend_size < 0)
         extend_size = 0;
     for (int i = 0; i < extend_size; ++i) {
@@ -36,15 +41,21 @@ vector<string> extend_data(vector<string> tokens, int size) {
 
 map<string, int> index_map(string index_line) {
     map<string, int> indexes;
-    vector<string> tokens = simple_tokenizer(std::move(index_line));
+    vector<string> tokens = simple_tokenizer(index_line);
     for (int i = 0; i < tokens.size(); ++i) {
         indexes[tokens[i]] = i;
     }
     return indexes;
 }
 
+unordered_set<char> st;
+
 string clean_content(string content) {
     static const char arr[] = {'#', '(', ')', ':', '\n', '\r', '!', '"', '$', '-', '&', '.', ':', '\'', ';', '*'};
+    if(st.empty()) {
+        for(char i : arr)
+            st.insert(i);
+    }
     regex tag_regex("@\\w+");
     regex num_regex("\\d+");
 
@@ -55,11 +66,11 @@ string clean_content(string content) {
     cleaned = regex_replace(cleaned, tag_regex, "");
     cleaned = regex_replace(cleaned, num_regex, "");
 
-    for (int i = 0; i < 16; ++i) {
-        replace(cleaned.begin(), cleaned.end(), arr[i], ' ');
-    }
-
-    return cleaned;
+    string result;
+    for(char & i : cleaned)
+        if(st.find(i) == st.end())
+            result += i;
+    return result;
 }
 
 void process_raw_data(){
@@ -77,8 +88,10 @@ void process_raw_data(){
             if (i == 0) {
                 indexes = index_map(tp);
             } else {
+                cout << i << endl;
                 tokens = extend_data(simple_tokenizer(tp), indexes.size());
-                if (tokens[indexes["lang"]] == "en" && tokens[indexes["hashtag"]].length() > 2) {
+                vector<string> hashtags = simple_tokenizer(tokens[indexes["hashtag"]]);
+                if (tokens[indexes["lang"]] == "en" && hashtags.size() > 2) {
                     tem_tokens.clear();
                     for (int j = 0; j < 4; ++j) {
                         tem_tokens.push_back(tokens[indexes[arr[j]]]);
