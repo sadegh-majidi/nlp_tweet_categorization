@@ -10,4 +10,6 @@ add_executable (
         utils.cpp
         utils.h
         stop_words.h
+        median_of_distances.cpp
+        median_of_distances.h
 )
