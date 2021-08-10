@@ -8,5 +8,6 @@
 #include <string>
 
 std::vector<double> get_vector(std::string word);
+void word2vec_setup();
 
 #endif //NCFINAL_WORD2VEC_H
