@@ -7,5 +7,6 @@
 #include <vector>
 #include <tuple>
 void sort_tuple(std::vector<std::tuple<int, int>>& list_of_tuples);
+double get_median(std::vector<double> l);
 
 #endif //NCFINAL_UTILS_H
