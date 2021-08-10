@@ -13,22 +13,21 @@ std::unordered_map<std::string, int> mp;
 
 const char* crawl_file_path = "/hdd/crawl-300d-2M.vec";
 
-const int cache_limit = 2e5;
+const int maxn = 2e6 + 20;
+const int cache_limit = 1e5 + 20;
 
+int offset[maxn];
 std::vector<double> results[cache_limit];
 
-int last_cached_line_position, n, m;
+int n, m;
 
-std::pair<std::string, std::vector<double>> get_line(int m, const std::string& l) {
-    std::string word = l.substr(0, l.find(' '));
-    int last = (int)word.length();
-    std::vector<double> result;
+void get_vector_from_line(const std::string& l, std::vector<double> *result) {
+    int last = (int)l.find(' ');
     for (int j = 0; j < m; j++) {
         auto new_last = (j + 1 < m ? l.find(' ', last + 1) : l.length());
-        result.push_back(std::stod(l.substr(last + 1, new_last)));
+        result->push_back(std::stod(l.substr(last + 1, new_last)));
         last = (int) new_last;
     }
-    return {word, result};
 }
 
 void word2vec_setup() {
@@ -36,36 +35,30 @@ void word2vec_setup() {
     f >> n >> m;
     std::string l;
     std::getline(f, l);
-    for(int i = 0; i < n && i < cache_limit; i++) {
+    for(int i = 0; i < n; i++) {
         std::getline(f, l);
-        auto [word, result] = get_line(m, l);
-        results[i] = std::move(result);
-        mp[word] = i;
+        mp[l.substr(0, l.find(' '))] = i;
+        offset[i] = (int)f.tellg();
+        if(i < cache_limit)
+            get_vector_from_line(l, &results[i]);
     }
-    last_cached_line_position = (int)f.tellg();
-    std::getline(f, l);
-    std::cout << l << std::endl;
     f.close();
 }
 
-std::vector<double> get_vector(std::string word) {
+std::vector<double> get_vector(const std::string& word) {
     if(mp.empty())
         word2vec_setup();
-    if(mp.find(word) != mp.end()) {
-        return results[mp[word]];
-    }
+    if(mp.find(word) != mp.end())
+        return {};
+    int index = mp[word];
+    if(index < cache_limit)
+        return results[index];
     std::ifstream f(crawl_file_path);
-    f.seekg(last_cached_line_position);
+    f.seekg(offset[index]);
     std::string l;
-    for (int i = cache_limit; i < n; i++) {
-        std::getline(f, l);
-        bool equal = true;
-        for (int j = 0; j < (int) word.length() && equal; j++)
-            equal &= (word[j] == l[j]);
-        if (!equal || l[word.length()] != ' ')
-            continue;
-        f.close();
-        return get_line(m, l).second;
-    }
-    return {};
+    std::getline(f, l);
+    f.close();
+    std::vector<double> result;
+    get_vector_from_line(l, &result);
+    return result;
 }
