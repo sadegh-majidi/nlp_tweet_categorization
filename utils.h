@@ -6,7 +6,10 @@
 #define NCFINAL_UTILS_H
 #include <vector>
 #include <tuple>
+
 void sort_tuple(std::vector<std::tuple<int, int>>& list_of_tuples);
-double get_median(std::vector<double> l);
+
+template <class T>
+T get_median(std::vector<T> l);
 
 #endif //NCFINAL_UTILS_H
