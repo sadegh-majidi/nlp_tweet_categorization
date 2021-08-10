@@ -5,32 +5,54 @@
 #include <vector>
 #include <map>
 #include <regex>
-#include <algorithm>
 #include <unordered_set>
 
 using namespace std;
 
 string file_address = "/home/solale/CLionProjects/nc-final-project/tweeter_data/near_washington_1015_1016_tweets.csv";
 
-vector<string> simple_tokenizer(string &s) {
+
+void write_csv(vector<vector<string>> data) {
+    ofstream my_file("cleaned_data.csv");
+
+    my_file << "date,content,id,hashtag,cleaned" << '\n';
+
+    for (auto &i : data) {
+
+        for (int j = 0; j < i.size(); ++j) {
+            if (j == i.size() - 1) {
+                my_file << i[j] << endl;
+            } else
+                my_file << i[j] << ",";
+
+        }
+    }
+
+    my_file.close();
+}
+
+vector<string> simple_tokenizer(string &s, int min_size = 0) {
     char delimiter = ',';
     vector<string> tokenized;
     std::string token;
-    int last = -1;
-    for(int i = 0; i < (int)s.size(); i++)
-        if(s[i] == delimiter && (s[last + 1] != '\"' || s[i - 1] == '\"'))
-        {
-            if(s[last + 1] == '\"')
+    int last = -1, i;
+    for (i = 0; i < (int) s.size(); i++)
+        if (s[i] == delimiter && (s[last + 1] != '\"' || s[i - 1] == '\"')) {
+            if (s[last + 1] == '\"')
                 tokenized.push_back(s.substr(last + 2, i - last - 3));
             else
                 tokenized.push_back(s.substr(last + 1, i - last - 1));
             last = i;
         }
+    if (s[last + 1] == '\"' && i - last - 3 > 0)
+        tokenized.push_back(s.substr(last + 2, i - last - 3));
+    else if (i - last - 1 > 0)
+        tokenized.push_back(s.substr(last + 1, i - last - 1));
     return tokenized;
 }
 
 vector<string> extend_data(vector<string> tokens, int size) {
-    int extend_size = size - (int)tokens.size();
+    int extend_size = size - (int) tokens.size();
     if (extend_size < 0)
         extend_size = 0;
     for (int i = 0; i < extend_size; ++i) {
@@ -52,8 +74,8 @@ unordered_set<char> st;
 
 string clean_content(string content) {
     static const char arr[] = {'#', '(', ')', ':', '\n', '\r', '!', '"', '$', '-', '&', '.', ':', '\'', ';', '*'};
-    if(st.empty()) {
-        for(char i : arr)
+    if (st.empty()) {
+        for (char i : arr)
             st.insert(i);
     }
     regex tag_regex("@\\w+");
@@ -67,13 +89,43 @@ string clean_content(string content) {
     cleaned = regex_replace(cleaned, num_regex, "");
 
     string result;
-    for(char & i : cleaned)
-        if(st.find(i) == st.end())
+    for (char &i : cleaned)
+        if (st.find(i) == st.end())
             result += i;
     return result;
 }
 
-void process_raw_data(){
+vector<string> hashtag_tokenizer(string &s, int min_size) {
+    char delimiter = ',';
+    vector<string> tokenized;
+    std::string token;
+    int last = -1, i;
+    for (i = 0; i < (int) s.size(); i++)
+        if (s[i] == delimiter && (s[last + 1] != '\"' || s[i - 1] == '\"')) {
+            if (s[last + 1] == '\"') {
+                token = s.substr(last + 2, i - last - 3);
+                if (token.length() > min_size)
+                    tokenized.push_back(token);
+            } else {
+                token = s.substr(last + 1, i - last - 1);
+                if (token.length() > min_size)
+                    tokenized.push_back(token);
+            }
+            last = i;
+        }
+    if (s[last + 1] == '\"' && i - last - 3 > 0) {
+        token = s.substr(last + 2, i - last - 3);
+        if (token.length() > min_size)
+            tokenized.push_back(token);
+    } else if (i - last - 1 > 0) {
+        token = s.substr(last + 1, i - last - 1);
+        if (token.length() > min_size)
+            tokenized.push_back(token);
+    }
+    return tokenized;
+}
+
+void process_raw_data() {
     ifstream newfile(file_address);
     if (newfile.is_open()) {
         string tp;
@@ -82,16 +134,15 @@ void process_raw_data(){
         vector<string> tokens;
         vector<vector<string >> data;
         string content;
-        static const string arr[] = {"hashtag", "content", "date", "id"};
+        static const string arr[] = {"date", "content", "id", "hashtag"};
         int i = 0;
         while (getline(newfile, tp)) {
             if (i == 0) {
                 indexes = index_map(tp);
             } else {
-                cout << i << endl;
                 tokens = extend_data(simple_tokenizer(tp), indexes.size());
-                vector<string> hashtags = simple_tokenizer(tokens[indexes["hashtag"]]);
-                if (tokens[indexes["lang"]] == "en" && hashtags.size() > 2) {
+                vector<string> hashtags = hashtag_tokenizer(tokens[indexes["hashtag"]], 2);
+                if (tokens[indexes["lang"]] == "en" && !hashtags.empty()) {
                     tem_tokens.clear();
                     for (int j = 0; j < 4; ++j) {
                         tem_tokens.push_back(tokens[indexes[arr[j]]]);
@@ -103,8 +154,9 @@ void process_raw_data(){
             }
             i++;
         }
+        newfile.close();
+        write_csv(data);
     }
-    newfile.close();
 }
 
 int main() {
