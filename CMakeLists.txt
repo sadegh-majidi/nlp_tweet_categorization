@@ -1,5 +1,11 @@
-cmake_minimum_required (VERSION 2.8.11)
+cmake_minimum_required (VERSION 3.9)
 project (NCFinal)
 set (CMAKE_CXX_STANDARD 17)
-#add_executable (word2vec.cpp)
-add_executable (main process_raw_data.cpp tweet_tokenizer.cpp)
+set(CMAKE_CXX_FLAGS -pthread)
+add_executable (
+        main
+        main.cpp
+        word2vec.cpp
+        process_raw_data.cpp
+        stop_words.h
+)
