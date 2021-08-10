@@ -17,6 +17,8 @@ const int cache_limit = 2e5;
 
 std::vector<double> results[cache_limit];
 
+int last_cached_line_position, n, m;
+
 std::pair<std::string, std::vector<double>> get_line(int m, const std::string& l) {
     std::string word = l.substr(0, l.find(' '));
     int last = (int)word.length();
@@ -31,7 +33,6 @@ std::pair<std::string, std::vector<double>> get_line(int m, const std::string& l
 
 void word2vec_setup() {
     std::ifstream f(crawl_file_path);
-    int n, m;
     f >> n >> m;
     std::string l;
     std::getline(f, l);
@@ -41,6 +42,10 @@ void word2vec_setup() {
         results[i] = std::move(result);
         mp[word] = i;
     }
+    last_cached_line_position = (int)f.tellg();
+    std::getline(f, l);
+    std::cout << l << std::endl;
+    f.close();
 }
 
 std::vector<double> get_vector(std::string word) {
@@ -50,10 +55,8 @@ std::vector<double> get_vector(std::string word) {
         return results[mp[word]];
     }
     std::ifstream f(crawl_file_path);
-    int n, m;
-    f >> n >> m;
+    f.seekg(last_cached_line_position);
     std::string l;
-    getline(f, l);
     for (int i = 0; i < n; i++) {
         std::getline(f, l);
         bool equal = true;
@@ -61,6 +64,7 @@ std::vector<double> get_vector(std::string word) {
             equal &= (word[j] == l[j]);
         if (!equal || l[word.length()] != ' ')
             continue;
+        f.close();
         return get_line(m, l).second;
     }
     return {};
