@@ -3,6 +3,9 @@
 #include <sys/stat.h>
 #include <thread>
 #include <vector>
+extern "C" {
+#include "html_decoder/entities.h"
+}
 
 using namespace std;
 

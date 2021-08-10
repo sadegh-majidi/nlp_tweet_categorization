@@ -10,4 +10,5 @@ add_executable (
         utils.cpp
         utils.h
         stop_words.h
+        html_decoder/entities.c
 )
