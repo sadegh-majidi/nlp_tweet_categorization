@@ -16,14 +16,18 @@ void write_csv(vector<vector<string>> data) {
     ofstream my_file("cleaned_data.csv");
 
     my_file << "date,content,id,hashtag,cleaned" << '\n';
+    string d;
 
     for (auto &i : data) {
 
         for (int j = 0; j < i.size(); ++j) {
+            d = i[j];
+            if (d.find(',') != std::string::npos || d.find('\n') != std::string::npos )
+                d = '\"' + d + '\"';
             if (j == i.size() - 1) {
-                my_file << i[j] << endl;
+                my_file << d << endl;
             } else
-                my_file << i[j] << ",";
+                my_file << d << ",";
 
         }
     }
