@@ -7,4 +7,4 @@ add_executable (
         word2vec.cpp
         process_raw_data.cpp
         stop_words.h
-)
+        calculate_tweet_vector.cpp calculate_tweet_vector.h)
