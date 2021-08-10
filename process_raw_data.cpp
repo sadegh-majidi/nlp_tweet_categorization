@@ -163,6 +163,3 @@ void process_raw_data() {
     }
 }
 
-int main() {
-    process_raw_data();
-}
