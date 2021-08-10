@@ -58,4 +58,10 @@ void quick_sort(std::vector<T> &arr, int low, int high, std::function<bool(T, T)
     }
 }
 
+template <class T>
+T get_median(std::vector<T> l) {
+    std::nth_element(l.begin(), l.begin() + l.size() / 2, l.end());
+    return l[l.size() / 2];
+}
+
 #endif //NCFINAL_UTILS_H

@@ -14,3 +14,11 @@ void sort_tuple(std::vector<std::tuple<int, int>> &list_of_tuples) {
     quick_sort<std::tuple<int, int>>(list_of_tuples, 0, (int) list_of_tuples.size() - 1, &cmp_tuple_second_element);
 }
 
+double cal_min_max_median(int val, std::vector<std::vector<double>> dist) {
+    std::vector<double> l;
+    for (int i = 0; i < val; i++)
+        for (int j = i + 1; j < val; j++)
+            l.push_back(dist[i][j]);
+
+    return get_median<double>(l);
+}
