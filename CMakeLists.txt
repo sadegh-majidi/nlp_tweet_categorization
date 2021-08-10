@@ -7,5 +7,8 @@ add_executable (
         main.cpp
         word2vec.cpp
         process_raw_data.cpp
+        utils.cpp
+        utils.h
         stop_words.h
+        html_decoder/entities.c
 )
