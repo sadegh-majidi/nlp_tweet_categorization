@@ -57,7 +57,7 @@ std::vector<double> get_vector(std::string word) {
     std::ifstream f(crawl_file_path);
     f.seekg(last_cached_line_position);
     std::string l;
-    for (int i = 0; i < n; i++) {
+    for (int i = cache_limit; i < n; i++) {
         std::getline(f, l);
         bool equal = true;
         for (int j = 0; j < (int) word.length() && equal; j++)
