@@ -9,11 +9,10 @@
 
 using namespace std;
 
-string file_address = "/home/solale/CLionProjects/nc-final-project/tweeter_data/near_washington_1015_1016_tweets.csv";
-
-
-void write_csv(vector<vector<string>> data) {
-    ofstream my_file("cleaned_data.csv");
+void write_csv(vector<vector<string>> data, const char* result_file_address) {
+    ofstream my_file(result_file_address);
+    if(!my_file.is_open())
+        return;
 
     my_file << "date,content,id,hashtag,cleaned" << '\n';
     string d;
@@ -22,7 +21,7 @@ void write_csv(vector<vector<string>> data) {
 
         for (int j = 0; j < i.size(); ++j) {
             d = i[j];
-            if (d.find(',') != std::string::npos || d.find('\n') != std::string::npos )
+            if (d.find(',') != string::npos || d.find('\n') != string::npos )
                 d = '\"' + d + '\"';
             if (j == i.size() - 1) {
                 my_file << d << endl;
@@ -38,7 +37,7 @@ void write_csv(vector<vector<string>> data) {
 vector<string> simple_tokenizer(string &s, int min_size = 0) {
     char delimiter = ',';
     vector<string> tokenized;
-    std::string token;
+    string token;
     int last = -1, i;
     for (i = 0; i < (int) s.size(); i++)
         if (s[i] == delimiter && (s[last + 1] != '\"' || s[i - 1] == '\"')) {
@@ -87,7 +86,7 @@ string clean_content(string content) {
 
     regex url_regex(
             R"(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))");
-    string cleaned = std::move(content);
+    string cleaned = move(content);
     cleaned = regex_replace(cleaned, url_regex, "");
     cleaned = regex_replace(cleaned, tag_regex, "");
     cleaned = regex_replace(cleaned, num_regex, "");
@@ -102,7 +101,7 @@ string clean_content(string content) {
 vector<string> hashtag_tokenizer(string &s, int min_size) {
     char delimiter = ',';
     vector<string> tokenized;
-    std::string token;
+    string token;
     int last = -1, i;
     for (i = 0; i < (int) s.size(); i++)
         if (s[i] == delimiter && (s[last + 1] != '\"' || s[i - 1] == '\"')) {
@@ -129,40 +128,36 @@ vector<string> hashtag_tokenizer(string &s, int min_size) {
     return tokenized;
 }
 
-void process_raw_data() {
+void process_raw_data(const char* file_address, const char* result_file_address) {
     ifstream newfile(file_address);
-    if (newfile.is_open()) {
-        string tp;
-        map<string, int> indexes;
-        vector<string> tem_tokens;
-        vector<string> tokens;
-        vector<vector<string >> data;
-        string content;
-        static const string arr[] = {"date", "content", "id", "hashtag"};
-        int i = 0;
-        while (getline(newfile, tp)) {
-            if (i == 0) {
-                indexes = index_map(tp);
-            } else {
-                tokens = extend_data(simple_tokenizer(tp), indexes.size());
-                vector<string> hashtags = hashtag_tokenizer(tokens[indexes["hashtag"]], 2);
-                if (tokens[indexes["lang"]] == "en" && !hashtags.empty()) {
-                    tem_tokens.clear();
-                    for (int j = 0; j < 4; ++j) {
-                        tem_tokens.push_back(tokens[indexes[arr[j]]]);
-                    }
-                    content = clean_content(tokens[indexes["content"]]);
-                    tem_tokens.push_back(content);
-                    data.push_back(tem_tokens);
+    if(!newfile.is_open())
+        return;
+    string tp;
+    map<string, int> indexes;
+    vector<string> tem_tokens;
+    vector<string> tokens;
+    vector<vector<string >> data;
+    string content;
+    static const string arr[] = {"date", "content", "id", "hashtag"};
+    int i = 0;
+    while (getline(newfile, tp)) {
+        if (i == 0) {
+            indexes = index_map(tp);
+        } else {
+            tokens = extend_data(simple_tokenizer(tp), indexes.size());
+            vector<string> hashtags = hashtag_tokenizer(tokens[indexes["hashtag"]], 2);
+            if (tokens[indexes["lang"]] == "en" && !hashtags.empty()) {
+                tem_tokens.clear();
+                for (int j = 0; j < 4; ++j) {
+                    tem_tokens.push_back(tokens[indexes[arr[j]]]);
                 }
+                content = clean_content(tokens[indexes["content"]]);
+                tem_tokens.push_back(content);
+                data.push_back(tem_tokens);
             }
-            i++;
         }
-        newfile.close();
-        write_csv(data);
+        i++;
     }
-}
-
-int main() {
-    process_raw_data();
+    newfile.close();
+    write_csv(data, result_file_address);
 }
