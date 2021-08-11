@@ -3,12 +3,13 @@
 #include <sys/stat.h>
 #include <thread>
 #include <vector>
+#include "word2vec.h"
 
 using namespace std;
 
 const char *absolute_path_to_resources = "/home/mahdi/Desktop/nc-final-project/files_twitter/";
 
-const pair<const char *, const char *> data_path[] = {
+const char* data_path[][2] = {
         {"near_washington_1015_1016_tweets.csv", "cleaned_near_washington_1015_1016_tweets.csv"},
         {"near_washington_1016_1017_tweets.csv", "cleaned_near_washington_1016_1017_tweets.csv"},
         {"near_washington_1017_1018_tweets.csv", "cleaned_near_washington_1017_1018_tweets.csv"},
@@ -28,6 +29,7 @@ int main() {
             v.push_back(move(th));
         }
     }
+    word2vec_setup();
     for(auto &th : v)
         th.join();
     cout << "done cleaning" << endl;
