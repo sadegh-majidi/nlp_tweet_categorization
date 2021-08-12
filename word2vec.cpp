@@ -16,7 +16,7 @@ const char* crawl_file_path = "/hdd/crawl-300d-2M.vec";
 const int maxn = 2e6 + 20;
 const int cache_limit = 1e5 + 20;
 
-int offset[maxn];
+std::streamoff offset[maxn];
 std::vector<double> results[cache_limit];
 
 int n, m;
@@ -35,10 +35,12 @@ void word2vec_setup() {
     f >> n >> m;
     std::string l;
     std::getline(f, l);
+    std::streamoff last = 0;
     for(int i = 0; i < n; i++) {
         std::getline(f, l);
         mp[l.substr(0, l.find(' '))] = i;
-        offset[i] = (int)f.tellg();
+        offset[i] = last;
+        last = f.tellg();
         if(i < cache_limit)
             get_vector_from_line(l, &results[i]);
     }
@@ -48,7 +50,7 @@ void word2vec_setup() {
 std::vector<double> get_vector(const std::string& word) {
     if(mp.empty())
         word2vec_setup();
-    if(mp.find(word) != mp.end())
+    if(mp.find(word) == mp.end())
         return {};
     int index = mp[word];
     if(index < cache_limit)
