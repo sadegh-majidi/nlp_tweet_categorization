@@ -77,8 +77,6 @@ string reduce_lengthening(string text, const string &pattern) {
         itr += res.position() + res.length();
     }
     result += text.substr(offset, text.length());
-    cout << text << "|" << '\n';
-    cout << result << "|";
     return result;
 
 }

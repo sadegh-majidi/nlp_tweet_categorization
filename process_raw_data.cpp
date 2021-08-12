@@ -62,16 +62,41 @@ vector<string> hashtag_tokenizer(string_view s, int min_size) {
 }
 
 
-void process_raw_data(const char *file_address, const char *result_file_address) {
+void process_raw_data(const char *file_address) {
     static const vector<string> arr = {"date", "content", "id", "hashtag"};
     csv::CSVReader in(file_address);
+    std::ofstream outFile;
+    std::string current_date;
 
     for (auto &row : in) {
         bool language_is_en = row["lang"].get<string_view>() == "en";
         bool has_hashtags = row["hashtag"].get<string_view>().size() > 2;
         if (language_is_en && has_hashtags) {
             std::vector<std::string> content = clean_content(row["content"].get<string_view>());
-            //TODO: write tokens to file and eliminate stopwords here
+
+            std::string date = (std::string)row["date"].get<string_view>();
+            if (!outFile) {
+                auto output_file_path = new std::string((std::string)file_address + "." + date + ".txt");
+                outFile.open((*output_file_path).data());
+                current_date = date;
+            }
+
+            if (current_date != date) {
+                outFile.close();
+                auto output_file_path = new std::string((std::string)file_address + "." + date + ".txt");
+                outFile.open((*output_file_path).data());
+                current_date = date;
+            }
+
+            auto non_stopwords_it = std::remove_if(content.begin(), content.end(), is_stopword);
+            std::vector<std::string> non_stop_words(content.begin(), non_stopwords_it);
+
+            int content_size = (int)non_stop_words.size();
+            outFile << content_size;
+            for(auto &word : non_stop_words)
+                outFile << " " << word;
+            outFile << std::endl;
         }
     }
+    outFile.close();
 }

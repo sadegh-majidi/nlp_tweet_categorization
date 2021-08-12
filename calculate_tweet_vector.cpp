@@ -42,10 +42,7 @@ void calc_tweet_vec(const char *file_address, const char *result_file_address) {
     std::ifstream infile(file_address);
     std::ofstream outfile(result_file_address);
 
-    int n;
-    infile >> n;
-
-    for (int i = 0; i < n; i++) {
+    while (!infile.eof()) {
         std::vector<std::string> tweet;
         int words_size;
         infile >> words_size;
