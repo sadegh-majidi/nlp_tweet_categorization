@@ -4,6 +4,10 @@
 #include <thread>
 #include <vector>
 #include "word2vec.h"
+#include "tweet_tokenizer.h"
+extern "C" {
+#include "html_decoder/entities.h"
+}
 
 using namespace std;
 
@@ -19,6 +23,7 @@ const char* data_path[][2] = {
 
 int main() {
     cout << "cleaning " << sizeof(data_path) / sizeof(data_path[0]) << " files ..." << endl;
+    initialize_tweet_tokenizer();
     vector<thread> v;
     for (auto[file_path, dest_path] : data_path) {
         auto absolute_file_path = new string((string) absolute_path_to_resources + file_path);

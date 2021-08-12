@@ -15,4 +15,6 @@ add_executable (
         median_of_distances.h
         calculate_tweet_vector.cpp
         calculate_tweet_vector.h
+        tweet_tokenizer.cpp
+        tweet_tokenizer.h
 )

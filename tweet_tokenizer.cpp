@@ -45,7 +45,7 @@ string bad_pattern = "([^a-zA-Z0-9])\\1{3,}";
 
 
 vector<string> WORD_RE{URLS, PHONE_NUMBER, EMOTICONS, HTML_TAGS, ASCII_ARROWS, TWITTER_USERNAME, TWITTER_HASHTAG,
-                       EMAIL_ADDRESS, WORD_WITH_DASH_AND_APOSTROPHE, NUMBERS, SIMPLE_WORD, ELLIPSIS, EXTRA};
+                       EMAIL_ADDRESS, WORD_WITH_DASH_AND_APOSTROPHE, NUMBERS, SIMPLE_WORD, ELLIPSIS};
 
 void initialize_tweet_tokenizer() {
     string WORD_PATTERN;
@@ -116,11 +116,4 @@ vector<string> tweet_tokenizer(string text, bool reduce_len = false,
         }
     }
     return words;
-}
-
-std::string str = " China’s edge in terms of relative economic influence is wider than for relative political influence Japan s economic influence is expected to wane with India’s expected to rise Read more from survey of SEA views on regional power dynamics ";
-
-int main() {
-    initialize_tweet_tokenizer();
-    tweet_tokenizer(str, true, false);
 }
