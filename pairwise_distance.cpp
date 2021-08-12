@@ -3,6 +3,7 @@
 #include <regex>
 #include <fstream>
 #include<thread>
+#include <math.h>
 
 double euclidean_distances(std::vector<double> x, std::vector<double> y) {
     double sum = 0;
@@ -28,7 +29,7 @@ void calculate_bulk_distance(std::vector<std::vector<double>> X, std::vector<std
 
 
 void pairwise_distance(std::vector<std::vector<double>> X, std::vector<std::vector<double>> Y) {
-    int bulk_count = 2;
+    int bulk_count = 8;
     int bulk_size = X.size() / bulk_count;
     if (bulk_size == 0)
         bulk_size = X.size();
@@ -36,7 +37,7 @@ void pairwise_distance(std::vector<std::vector<double>> X, std::vector<std::vect
     std::vector<std::thread> v;
     while (offset < X.size()) {
         auto first = X.begin() + offset;
-        auto last = X.begin() + offset + bulk_size;
+        auto last = X.begin() + std::min(offset + bulk_size, (int) X.size());;
         std::vector<std::vector<double>> newVec(first, last);
         char I = '0' + offset / bulk_size;
         std::string file_name;
