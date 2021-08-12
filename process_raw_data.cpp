@@ -9,23 +9,30 @@ using namespace std;
 unordered_set<char> st;
 
 string clean_content(string_view content) {
-    static const char arr[] = {'#', '(', ')', ':', '\n', '\r', '!', '"', '$', '-', '&', '.', ':', '\'', ';', '*'};
+    static const char arr[] = {'#', '(', ')', ':', '\n', '\r', '!', '&', '*', '$', '-', ',', ';', '\'', '.', '"'};
     static const regex tag_regex("@\\w+");
     static const regex num_regex("\\d+");
     static const regex url_regex(R"((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)");
+    static const regex space_regex("\\s\\s");
     if (st.empty()) {
         for (char i : arr)
             st.insert(i);
     }
-    string cleaned;
-    for (char ch : content)
+    string cleaned = (string)content;
+    cleaned = regex_replace(cleaned, url_regex, " ");
+    cleaned = regex_replace(cleaned, tag_regex, " ");
+    cleaned = regex_replace(cleaned, num_regex, " ");
+    string result;
+    result.swap(cleaned);
+    for (char ch : result)
+    {
         if (st.find(ch) == st.end())
             cleaned += ch;
         else
             cleaned += ' ';
-    cleaned = regex_replace(cleaned, url_regex, "");
-    cleaned = regex_replace(cleaned, tag_regex, "");
-    cleaned = regex_replace(cleaned, num_regex, "");
+    }
+    cleaned = regex_replace(cleaned, space_regex, " ");
+    cleaned = regex_replace(cleaned, space_regex, " ");
 
     return cleaned;
 }
@@ -59,7 +66,7 @@ void process_raw_data(const char *file_address, const char *result_file_address)
     vector<string> tem_tokens;
     for (const auto &column : arr)
         tem_tokens.push_back(column);
-    tem_tokens.emplace_back("content");
+    tem_tokens.emplace_back("cleaned");
     writer << tem_tokens;
     for (auto &row : in) {
         bool language_is_en = row["lang"].get<string_view>() == "en";
