@@ -12,4 +12,5 @@ add_executable (
         stop_words.h
         median_of_distances.cpp
         median_of_distances.h
-        pairwise_distance.cpp pairwise_distance.h)
+        global_constants.h
+)
