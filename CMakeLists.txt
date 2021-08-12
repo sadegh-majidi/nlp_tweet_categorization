@@ -11,4 +11,8 @@ add_executable (
         utils.h
         stop_words.h
         html_decoder/entities.c
+        median_of_distances.cpp
+        median_of_distances.h
+        calculate_tweet_vector.cpp
+        calculate_tweet_vector.h
 )
