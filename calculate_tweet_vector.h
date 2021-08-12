@@ -5,6 +5,6 @@
 #ifndef NCFINAL_CALCULATE_TWEET_VECTOR_H
 #define NCFINAL_CALCULATE_TWEET_VECTOR_H
 
-std::vector<std::vector<double>> calc_tweet_vec(const std::vector<std::string>& cleaned_tweets);
+void calc_tweet_vec_all(const char* input_data_path[], const char* output_data_path[], int size);
 
 #endif //NCFINAL_CALCULATE_TWEET_VECTOR_H

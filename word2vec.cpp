@@ -48,7 +48,7 @@ void word2vec_setup() {
 std::vector<double> get_vector(const std::string& word) {
     if(mp.empty())
         word2vec_setup();
-    if(mp.find(word) != mp.end())
+    if(mp.find(word) == mp.end())
         return {};
     int index = mp[word];
     if(index < cache_limit)
