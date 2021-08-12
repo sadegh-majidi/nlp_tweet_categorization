@@ -1,20 +1,17 @@
-#include <iostream>
-#include <fstream>
 #include <string>
-#include <utility>
 #include <vector>
-#include <map>
 #include <regex>
-#include <boost/config.hpp>
-#include <boost/regex.hpp>
+#include <iostream>
 
-#include <unordered_set>
-
+extern "C" {
+#include "html_decoder/entities.h"
+}
 using namespace std;
-string WORD_PATTERN;
+
+
+regex WORD_REGEX;
 
 string EMOTICONS = R"((?:[<>]?[:;=8][-o*']?[\)\]\([dDpP/:}{@|\\]|[\)\]\([dDpP/:}{@|\\][-o*']?[:;=8][<>]?|<3))";
-//regex EMOTICONS(h);
 
 regex emoticons(EMOTICONS);
 
@@ -34,11 +31,11 @@ string WORD_WITH_DASH_AND_APOSTROPHE = R"((?:[^\W\d_](?:[^\W\d_]|['\-_])+[^\W\d_
 
 string NUMBERS = R"((?:[+\-]?\d+[,/.:-]\d+[+\-]?))";
 
-string SIMPLE_WORD = "(?:[\\w_]+) ";
+string SIMPLE_WORD = "(?:[\\w_]+)";
 
-string ELLIPSIS = R"((?:\.(?:\s*\.){1,}) )";
+string ELLIPSIS = R"((?:\.(?:\s*\.){1,}))";
 
-string EXTRA = "(?:\\S) ";
+string EXTRA = "(?:\\S)";
 
 string URLS = R"(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))";
 
@@ -47,8 +44,22 @@ string shorten_pattern = "(.)\\1{3,}";
 string bad_pattern = "([^a-zA-Z0-9])\\1{3,}";
 
 
-vector<string> WORD_RE{EMOTICONS, PHONE_NUMBER, HTML_TAGS, ASCII_ARROWS, TWITTER_HASHTAG, TWITTER_USERNAME,
-                       EMAIL_ADDRESS, WORD_WITH_DASH_AND_APOSTROPHE, NUMBERS, SIMPLE_WORD, ELLIPSIS, EXTRA, URLS};
+vector<string> WORD_RE{URLS, PHONE_NUMBER, EMOTICONS, HTML_TAGS, ASCII_ARROWS, TWITTER_USERNAME, TWITTER_HASHTAG,
+                       EMAIL_ADDRESS, WORD_WITH_DASH_AND_APOSTROPHE, NUMBERS, SIMPLE_WORD, ELLIPSIS, EXTRA};
+
+void initialize_tweet_tokenizer() {
+    string WORD_PATTERN;
+    if (WORD_PATTERN.empty()) {
+        WORD_PATTERN += "(";
+        for (int i = 0; i < WORD_RE.size(); ++i) {
+            WORD_PATTERN += WORD_RE[i];
+            if (i != WORD_RE.size() - 1)
+                WORD_PATTERN += "|";
+        }
+        WORD_PATTERN += ")";
+    }
+    WORD_REGEX = regex(WORD_PATTERN, std::regex_constants::icase);
+}
 
 
 string reduce_lengthening(string text, const string &pattern) {
@@ -60,36 +71,41 @@ string reduce_lengthening(string text, const string &pattern) {
     auto itr = text.begin();
 
     while (std::regex_search(itr, text.end(), res, repeat_regexp)) {
-//        std::cout << "[" << res[0] << "]" << std::endl;
         string t = res[0];
         result += text.substr(offset, res.position()) + t[0] + t[0] + t[0];
         offset += res.position() + res.length();
         itr += res.position() + res.length();
     }
     result += text.substr(offset, text.length());
-//    cout << text << "|" << '\n';
-//    cout << result << "|";
+    cout << text << "|" << '\n';
+    cout << result << "|";
     return result;
 
 }
 
-vector<string> find_word(string text, const regex &WORD_REGEX) {
-    std::smatch m;
+vector<string> find_word(string text) {
     vector<string> result;
-    while (std::regex_search(text, m, WORD_REGEX)) {
-        result.push_back(m[0]);
-        text = m.suffix().str();
+
+    std::regex_iterator<std::string::iterator> rit(text.begin(), text.end(), WORD_REGEX);
+    std::regex_iterator<std::string::iterator> rend;
+
+    while (rit != rend) {
+        result.push_back(rit->str());
+        ++rit;
     }
+
     return result;
+
 }
 
 
-vector<string> tweet_tokenizer(const regex &WORD, string text, bool reduce_len = false,
+vector<string> tweet_tokenizer(string text, bool reduce_len = false,
                                bool preserve_case = true) {
+    decode_html_entities_utf8(text.data(), NULL);
     if (reduce_len)
         text = reduce_lengthening(text, shorten_pattern);
     text = reduce_lengthening(text, bad_pattern);
-    vector<string> words = find_word(text, WORD);
+    vector<string> words = find_word(text);
     if (!preserve_case) {
         for (int i = 0; i < words.size(); ++i) {
             cmatch cm;
@@ -102,18 +118,9 @@ vector<string> tweet_tokenizer(const regex &WORD, string text, bool reduce_len =
     return words;
 }
 
-std::string str = "8) XYZ111 d-dxxxxxxx GFT  ;((  <3   ://  GHY  :] XYZ222 t-nyyyyyYYyyy XYZ333 t-r jbhAAhhhh kjkjbhjgbj gfggggggggg yfyfy";
-
+std::string str = " China’s edge in terms of relative economic influence is wider than for relative political influence Japan s economic influence is expected to wane with India’s expected to rise Read more from survey of SEA views on regional power dynamics ";
 
 int main() {
-    if (WORD_PATTERN.empty()) {
-        for (int i = 0; i < WORD_RE.size(); ++i) {
-            WORD_PATTERN += WORD_RE[i];
-            if (i != WORD_RE.size() - 1)
-                WORD_PATTERN += "|";
-        }
-    }
-    regex WORD_REGEX(WORD_PATTERN);
-//    find_word(str, WORD_REGEX);
-    tweet_tokenizer(WORD_REGEX, str, true, false);
+    initialize_tweet_tokenizer();
+    tweet_tokenizer(str, true, false);
 }
