@@ -1,6 +1,8 @@
 #include <string>
 #include <vector>
 #include <regex>
+#include <unordered_set>
+#include <math.h>
 #include <fstream>
 #include<thread>
 
@@ -35,10 +37,8 @@ void pairwise_distance(std::vector<std::vector<double>> X, std::vector<std::vect
     int offset = 0;
     std::vector<std::thread> v;
     while (offset < X.size()) {
-        __gnu_cxx::__normal_iterator<std::vector<double> *, std::vector<std::vector<double>>> first =
-                X.begin() + offset;
-        __gnu_cxx::__normal_iterator<std::vector<double> *, std::vector<std::vector<double>>> last =
-                X.begin() + offset + bulk_size;
+        auto first = X.begin() + offset;
+        auto last = X.begin() + offset + bulk_size;
         std::vector<std::vector<double>> newVec(first, last);
         char I = '0' + offset / bulk_size;
         std::string file_name;
