@@ -13,4 +13,6 @@ add_executable (
         median_of_distances.cpp
         median_of_distances.h
         global_constants.h
+        pairwise_distance.cpp
+        pairwise_distance.h
 )
