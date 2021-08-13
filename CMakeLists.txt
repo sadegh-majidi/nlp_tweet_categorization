@@ -11,6 +11,9 @@ add_executable (
         html_decoder/entities.c
         median_of_distances.cpp
         median_of_distances.h
+        global_constants.h
+        pairwise_distance.cpp
+        pairwise_distance.h
         calculate_tweet_vector.cpp
         calculate_tweet_vector.h
         tweet_tokenizer.cpp

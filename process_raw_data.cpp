@@ -19,23 +19,30 @@ bool is_stopword(const std::string& word) {
 }
 
 std::vector<std::string> clean_content(string_view content) {
-    static const char arr[] = {'#', '(', ')', ':', '\n', '\r', '!', '"', '$', '-', '&', '.', ':', '\'', ';', '*'};
+    static const char arr[] = {'#', '(', ')', ':', '\n', '\r', '!', '&', '*', '$', '-', ',', ';', '\'', '.', '"'};
     static const regex tag_regex("@\\w+");
     static const regex num_regex("\\d+");
     static const regex url_regex(R"((https?):((//)|(\\\\))+([\w\d:#@%/;$()~_?\+-=\\\.&](#!)?)*)");
+    static const regex space_regex("\\s\\s");
     if (st.empty()) {
         for (char i : arr)
             st.insert(i);
     }
-    string cleaned;
-    for (char ch : content)
+    string cleaned = (string)content;
+    cleaned = regex_replace(cleaned, url_regex, " ");
+    cleaned = regex_replace(cleaned, tag_regex, " ");
+    cleaned = regex_replace(cleaned, num_regex, " ");
+    string result;
+    result.swap(cleaned);
+    for (char ch : result)
+    {
         if (st.find(ch) == st.end())
             cleaned += ch;
         else
             cleaned += ' ';
-    cleaned = regex_replace(cleaned, url_regex, "");
-    cleaned = regex_replace(cleaned, tag_regex, "");
-    cleaned = regex_replace(cleaned, num_regex, "");
+    }
+    cleaned = regex_replace(cleaned, space_regex, " ");
+    cleaned = regex_replace(cleaned, space_regex, " ");
 
     std::vector<std::string> tokenized_cleaned = tweet_tokenizer(cleaned, true, false);
 
