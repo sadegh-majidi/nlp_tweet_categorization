@@ -5,6 +5,7 @@
 #include <vector>
 #include "word2vec.h"
 #include "global_constants.h"
+#include "median_of_distances.h"
 
 using namespace std;
 
@@ -20,9 +21,10 @@ int main() {
             v.push_back(move(th));
         }
     }
-    word2vec_setup();
+//    word2vec_setup();
     for(auto &th : v)
         th.join();
     cout << "done cleaning" << endl;
+    cout << get_median_of_distances(33025) << endl;
     return 0;
 }
