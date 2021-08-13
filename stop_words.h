@@ -5,6 +5,8 @@
 #ifndef NCFINAL_STOP_WORDS_H
 #define NCFINAL_STOP_WORDS_H
 
+#include <unordered_set>
+
 const char *stopwords[] = {
         "against", "o", "d", "wouldn\'t", "s", "own", "been", "ma", "so", "up", "further", "was", "here", "can", "a",
         "have", "before", "our", "those", "me", "in", "do", "their", "over", "its", "be", "theirs", "isn", "again",
@@ -21,5 +23,14 @@ const char *stopwords[] = {
         "his", "no", "you\'ve", "hadn", "of", "ours", "than", "but", "just", "below", "as", "myself", "mustn", "both",
         "won", "there", "what", "through", "ll", "it", "an", "when", "only"
 };
+
+std::unordered_set<std::string> stopwords_set;
+
+void setup_stopwords() {
+    if(stopwords_set.empty()) {
+        for(auto stop_word : stopwords)
+            stopwords_set.insert((std::string)stop_word);
+    }
+}
 
 #endif //NCFINAL_STOP_WORDS_H

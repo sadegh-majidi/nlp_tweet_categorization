@@ -5,6 +5,6 @@
 #ifndef NCFINAL_CALCULATE_TWEET_VECTOR_H
 #define NCFINAL_CALCULATE_TWEET_VECTOR_H
 
-void calc_tweet_vec_all(const char* input_data_path[], const char* output_data_path[], int size);
+void calc_tweet_vec(const char *file_address, const char *result_file_address);
 
 #endif //NCFINAL_CALCULATE_TWEET_VECTOR_H

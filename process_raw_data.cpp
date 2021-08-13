@@ -11,11 +11,8 @@ using namespace std;
 unordered_set<char> st;
 
 bool is_stopword(const std::string& word) {
-    for (auto & stopword : stopwords) {
-        if (word == stopword)
-            return true;
-    }
-    return false;
+    setup_stopwords();
+    return stopwords_set.find(word) != stopwords_set.end();
 }
 
 std::vector<std::string> clean_content(string_view content) {
