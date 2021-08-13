@@ -7,6 +7,8 @@
 #include "median_of_distances.h"
 #include "calculate_tweet_vector.h"
 #include "tweet_tokenizer.h"
+#include "graph.h"
+
 extern "C" {
 #include "html_decoder/entities.h"
 }
