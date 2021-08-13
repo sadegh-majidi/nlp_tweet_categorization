@@ -7,12 +7,15 @@ add_executable (
         main.cpp
         word2vec.cpp
         process_raw_data.cpp
-        utils.cpp
-        utils.h
         stop_words.h
-        median_of_distances.h
+        html_decoder/entities.c
         median_of_distances.cpp
+        median_of_distances.h
         global_constants.h
         pairwise_distance.cpp
         pairwise_distance.h
+        calculate_tweet_vector.cpp
+        calculate_tweet_vector.h
+        tweet_tokenizer.cpp
+        tweet_tokenizer.h
 )

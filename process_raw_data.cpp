@@ -3,12 +3,22 @@
 #include <regex>
 #include <unordered_set>
 #include "csv-parser/single_include/csv.hpp"
+#include "tweet_tokenizer.h"
+#include "stop_words.h"
 
 using namespace std;
 
 unordered_set<char> st;
 
-string clean_content(string_view content) {
+bool is_stopword(const std::string& word) {
+    for (auto & stopword : stopwords) {
+        if (word == stopword)
+            return true;
+    }
+    return false;
+}
+
+std::vector<std::string> clean_content(string_view content) {
     static const char arr[] = {'#', '(', ')', ':', '\n', '\r', '!', '&', '*', '$', '-', ',', ';', '\'', '.', '"'};
     static const regex tag_regex("@\\w+");
     static const regex num_regex("\\d+");
@@ -34,7 +44,9 @@ string clean_content(string_view content) {
     cleaned = regex_replace(cleaned, space_regex, " ");
     cleaned = regex_replace(cleaned, space_regex, " ");
 
-    return cleaned;
+    std::vector<std::string> tokenized_cleaned = tweet_tokenizer(cleaned, true, false);
+
+    return tokenized_cleaned;
 }
 
 vector<string> hashtag_tokenizer(string_view s, int min_size) {
@@ -57,27 +69,39 @@ vector<string> hashtag_tokenizer(string_view s, int min_size) {
 }
 
 
-void process_raw_data(const char *file_address, const char *result_file_address) {
+void process_raw_data(const char *file_address) {
     static const vector<string> arr = {"date", "content", "id", "hashtag"};
     csv::CSVReader in(file_address);
-    ofstream out(result_file_address);
-    auto writer = csv::make_csv_writer(out);
-    vector<vector<string>> data;
-    vector<string> tem_tokens;
-    for (const auto &column : arr)
-        tem_tokens.push_back(column);
-    tem_tokens.emplace_back("cleaned");
-    writer << tem_tokens;
+    std::ofstream outFile;
+    std::string current_date;
+
     for (auto &row : in) {
         bool language_is_en = row["lang"].get<string_view>() == "en";
         bool has_hashtags = row["hashtag"].get<string_view>().size() > 2;
         if (language_is_en && has_hashtags) {
-            string content = clean_content(row["content"].get<string_view>());
-            tem_tokens.clear();
-            for (const auto &column : arr)
-                tem_tokens.push_back(move(row[column].get<string>()));
-            tem_tokens.push_back(move(content));
-            writer << tem_tokens;
+            std::vector<std::string> content = clean_content(row["content"].get<string_view>());
+
+            std::string date = (std::string)row["date"].get<string_view>();
+            if (!outFile) {
+                outFile.open((std::string)file_address + "." + date + ".txt");
+                current_date = date;
+            }
+
+            if (current_date != date) {
+                outFile.close();
+                outFile.open((std::string)file_address + "." + date + ".txt");
+                current_date = date;
+            }
+
+            auto non_stopwords_it = std::remove_if(content.begin(), content.end(), is_stopword);
+            std::vector<std::string> non_stop_words(content.begin(), non_stopwords_it);
+
+            int content_size = (int)non_stop_words.size();
+            outFile << content_size;
+            for(auto &word : non_stop_words)
+                outFile << " " << word;
+            outFile << std::endl;
         }
     }
+    outFile.close();
 }
