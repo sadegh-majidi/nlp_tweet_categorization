@@ -10,8 +10,8 @@
 #include <iostream>
 
 
-std::vector<int> intersection(std::vector<int> &v1,
-                              std::vector<int> &v2) {
+std::vector<int> intersection(std::vector<int> v1,
+                              std::vector<int> v2) {
     std::vector<int> v3;
 
     std::sort(v1.begin(), v1.end());
@@ -48,11 +48,15 @@ class Graph {
     //array of vectors to store adjacency list
     std::vector<Edge> edges;
     int vertices;
+    std::vector<std::vector<int>> adjacency;
 
 public:
-    explicit Graph(int n) {
-        vertices = n;
-        adjacency = new std::vector<int>[vertices]; //dynamic allocation
+    explicit Graph(int n) : vertices(n) {
+        for (int i = 0; i < vertices; ++i) {
+            std::vector<int> d;
+            adjacency.push_back(d);
+        }
+//        adjacency = new std::vector<int>[vertices]; //dynamic allocation
     }
 
     void add_edge(int u, int v, int w) {
@@ -81,5 +85,30 @@ public:
         output_file.close();
     }
 
-    std::vector<int> *adjacency;
+    void connected_components(std::vector<std::vector<int>> &components) {
+        std::vector<bool> visited;
+        visited.resize(vertices, false);
+        int c=0;
+        for (int i = 0; i < vertices; ++i) {
+            if (!visited[i]) {
+                std::vector<int> component;
+                components.push_back(component);
+                find_component_recursive(i, visited, components, c);
+                c++;
+            }
+        }
+
+    }
+
+    void find_component_recursive(int i, std::vector<bool> &visited, std::vector<std::vector<int>> &components, int c) {
+        if (visited[i])
+            return;
+        visited[i] = true;
+        components[c].push_back(i);
+        for (int j : adjacency[i]) {
+            find_component_recursive(j, visited, components, c);
+        }
+
+    }
+
 };
