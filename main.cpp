@@ -27,17 +27,7 @@ int main() {
         th.join();
     cout << "done cleaning" << endl;
 
-    const char* inputs[] = {"near_washington_1015_1016_tweets.csv.2020-10-15.txt",
-                            "near_washington_1016_1017_tweets.csv.2020-10-16.txt",
-                            "near_washington_1017_1018_tweets.csv.2020-10-17.txt",
-                            "near_washington_1018_1019_tweets.csv.2020-10-18.txt",
-                            "near_washington_1019_1022_tweets.csv.2020-10-19.txt",
-                            "near_washington_1019_1022_tweets.csv.2020-10-20.txt",
-                            "near_washington_1019_1022_tweets.csv.2020-10-21.txt"};
-    const char* outputs[] = {"2020-10-15.txt", "2020-10-16.txt", "2020-10-17.txt",
-                             "2020-10-18.txt", "2020-10-19.txt", "2020-10-20.txt", "2020-10-21.txt"};
-
-    calc_tweet_vec_all(inputs, outputs, 7);
+    calc_tweet_vec_all(cal_tweet_vec_inputs, cal_tweet_vec_outputs, number_of_cal_tweet_vec_files);
 
     cout << get_median_of_distances(33025) << endl;
     return 0;

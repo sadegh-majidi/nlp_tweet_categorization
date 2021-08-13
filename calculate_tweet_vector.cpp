@@ -11,6 +11,7 @@
 #include <iostream>
 #include "calculate_tweet_vector.h"
 #include "word2vec.h"
+#include "global_constants.h"
 
 std::vector<double> calc_tweet_mat(const std::vector<std::string>& words) {
     int size = 0;
@@ -67,8 +68,6 @@ void calc_tweet_vec(const char *file_address, const char *result_file_address) {
 }
 
 void calc_tweet_vec_all(const char* input_data_path[], const char* output_data_path[], int size) {
-    const char *absolute_path_to_resources = "/home/sadegh/Desktop/";
-
     std::vector<std::thread> v;
     for (int i = 0; i < size; i++) {
         auto absolute_file_path = new std::string((std::string) absolute_path_to_resources + input_data_path[i]);
