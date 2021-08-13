@@ -22,4 +22,5 @@ add_executable(
         effective_edges.h
         effective_hashtags.cpp
         effective_hashtags.h
+        graph.cpp graph.h
 )
