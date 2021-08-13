@@ -48,7 +48,7 @@ double get_median_of_distances(int n) {
     for(int i = 0; i < pairwise_distance_threads; i++)
         file_paths.emplace_back((std::string)pairwise_distance_output_directory_path + (char)('0' + i));
     MultiFileReader mfr(file_paths);
-
+    n = (n + 1) / 2;
     std::vector<double> s(n, 0);
     double min = 1e9, max = -1e9;
     for(int i = 0; i < n; i++)
