@@ -54,12 +54,11 @@ auto load_all_vectors(const char* file_address) {
 
 void pairwise_distance(const char* file_address) {
     const auto [M, cached_sum] = load_all_vectors(file_address);
-    int bulk_count = 8;
     int offset = 0, n = (int)M.size();
     long long cur = 0;
-    long long each = 1LL * n * (n - 1) / 2 / bulk_count;
+    long long each = 1LL * n * (n - 1) / 2 / pairwise_distance_threads;
     std::vector<std::thread> v;
-    for(int i = 0; i < bulk_count; i++) {
+    for(int i = 0; i < pairwise_distance_threads; i++) {
         int first = offset;
         while(offset < n && 1LL * offset * (offset - 1) / 2 - cur < each)
             offset++;
