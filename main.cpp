@@ -42,13 +42,8 @@ int main() {
         pairwise_distance(n, output.data());
         double sigma = get_median_of_distances(n) / median_division_factor;
         auto tweet_edges = get_effective_tweet_edges(n, sigma);
-        auto hashtags = get_effective_hashtags(n, output_hashtags.data());
-        vector<string> unique_hashtags;
-        for(const auto &x : hashtags)
-            for(const auto &y : x)
-                unique_hashtags.push_back(y);
-        sort(unique_hashtags.begin(), unique_hashtags.end());
-        unique_hashtags.resize(unique(unique_hashtags.begin(), unique_hashtags.end()) - unique_hashtags.begin());
+        auto [hashtags, unique_hashtags] = get_effective_hashtags(n, output_hashtags.data());
+        cout << unique_hashtags.size() << endl;
 //        create_graph(n, tweet_edges, hashtags);
     }
     return 0;
