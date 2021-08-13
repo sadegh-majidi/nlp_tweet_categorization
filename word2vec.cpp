@@ -10,13 +10,13 @@
 #include <iostream>
 #include "global_constants.h"
 
-std::unordered_map<std::string, int> mp;
+static std::unordered_map<std::string, int> mp;
 
 const int maxn = 2e6 + 20;
 const int cache_limit = 1e5 + 20;
 
-std::streamoff offset[maxn];
-std::vector<double> results[cache_limit];
+static std::streamoff offset[maxn];
+static std::vector<double> results[cache_limit];
 
 int n;
 

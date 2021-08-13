@@ -8,6 +8,6 @@ using namespace std;
 #ifndef NCFINAL_PAIRWISE_DISTANCE_H
 #define NCFINAL_PAIRWISE_DISTANCE_H
 
-void pairwise_distance(const char* file_address);
+int pairwise_distance(const char* file_address);
 
 #endif //NCFINAL_PAIRWISE_DISTANCE_H

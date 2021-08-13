@@ -34,12 +34,11 @@ void calculate_bulk_distance(const std::vector<std::vector<double>> &M,
 
 auto load_all_vectors(const char* file_address) {
     std::ifstream in(file_address);
-    int n;
-    in >> n;
-
-    std::vector<std::vector<double>> all_vectors(n, std::vector<double>());
-    std::vector<double> cached_sum(n, 0);
-    for(int i = 0; i < n; i++) {
+    std::vector<std::vector<double>> all_vectors;
+    std::vector<double> cached_sum;
+    for(int i = 0; !in.eof(); i++) {
+        all_vectors.emplace_back();
+        cached_sum.push_back(0);
         all_vectors[i].resize(VECTOR_COLUMNS);
         for(auto &x : all_vectors[i])
         {
@@ -52,7 +51,7 @@ auto load_all_vectors(const char* file_address) {
 }
 
 
-void pairwise_distance(const char* file_address) {
+int pairwise_distance(const char* file_address) {
     const auto [M, cached_sum] = load_all_vectors(file_address);
     int offset = 0, n = (int)M.size();
     long long cur = 0;
@@ -73,4 +72,5 @@ void pairwise_distance(const char* file_address) {
 
     for (auto &th : v)
         th.join();
+    return (int)M.size();
 }
