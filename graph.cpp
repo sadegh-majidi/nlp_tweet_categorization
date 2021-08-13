@@ -29,7 +29,7 @@ class Edge {
     double w;
 
 public:
-    Edge(int u, int v, int w) : u(u), v(v), w(w) {}
+    Edge(int u, int v, double w) : u(u), v(v), w(w) {}
 
     [[nodiscard]] int get_u() const {
         return u;
@@ -59,7 +59,7 @@ public:
 //        adjacency = new std::vector<int>[vertices]; //dynamic allocation
     }
 
-    void add_edge(int u, int v, int w) {
+    void add_edge(int u, int v, double w) {
         edges.emplace_back(u, v, w);
         adjacency[u].push_back(v);
         adjacency[v].push_back(u);
@@ -112,3 +112,18 @@ public:
     }
 
 };
+
+
+Graph generate_graph(int n, const std::vector<std::tuple<int, int, double>>& tweet_edges,
+                     const std::vector<std::vector<int>>& hashtags, int unique_hashtags_size) {
+    Graph graph(n + unique_hashtags_size);
+
+    for (auto &edge : tweet_edges)
+        graph.add_edge(std::get<0>(edge), std::get<1>(edge), 2 - std::get<2>(edge));
+
+    for (int i = 0; i < n; i++)
+        for (int hashtag_id : hashtags[i])
+            graph.add_edge(i, n + hashtag_id, 1);
+
+    return graph;
+}
