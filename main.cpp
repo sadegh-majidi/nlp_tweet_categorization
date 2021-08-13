@@ -6,6 +6,7 @@
 #include "word2vec.h"
 #include "global_constants.h"
 #include "median_of_distances.h"
+#include "pairwise_distance.h"
 
 using namespace std;
 
@@ -25,6 +26,9 @@ int main() {
     for(auto &th : v)
         th.join();
     cout << "done cleaning" << endl;
+    cout << "pairwise distance start" << endl;
+//    pairwise_distance(((string) absolute_path_to_resources + "tweet_vec").data());
+    cout << "done" << endl;
     cout << get_median_of_distances(33025) << endl;
     return 0;
 }
