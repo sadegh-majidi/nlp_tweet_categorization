@@ -12,4 +12,7 @@
 class Graph {
 };
 
+Graph generate_graph(int n, const std::vector<std::tuple<int, int, double>>& tweet_edges,
+                     const std::vector<std::vector<int>>& hashtags, int unique_hashtags_size);
+
 #endif //NCFINAL_GRAPH_H

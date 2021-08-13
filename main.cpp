@@ -43,8 +43,9 @@ int main() {
         double sigma = get_median_of_distances(n) / median_division_factor;
         auto tweet_edges = get_effective_tweet_edges(n, sigma);
         auto [hashtags, unique_hashtags] = get_effective_hashtags(n, output_hashtags.data());
-        cout << unique_hashtags.size() << endl;
-//        create_graph(n, tweet_edges, hashtags);
+        int unique_hashtags_size = (int) unique_hashtags.size();
+        cout << unique_hashtags_size << endl;
+        Graph graph = generate_graph(n, tweet_edges, hashtags, unique_hashtags_size);
     }
     return 0;
 }
