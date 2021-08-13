@@ -17,7 +17,7 @@ inline double euclidean_distances(const std::vector<double> &x, const std::vecto
 }
 
 void calculate_bulk_distance(const std::vector<std::vector<double>> &M,
-                             const std::vector<double> cached_sum,
+                             const std::vector<double> &cached_sum,
                              int X_begin_index, int X_end_index, std::string file_name) {
     std::ofstream output_file(pairwise_distance_output_directory_path + file_name);
     output_file << X_begin_index << " " << X_end_index << '\n';
