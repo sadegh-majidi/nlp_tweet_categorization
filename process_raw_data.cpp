@@ -76,15 +76,13 @@ void process_raw_data(const char *file_address) {
 
             std::string date = (std::string)row["date"].get<string_view>();
             if (!outFile) {
-                auto output_file_path = new std::string((std::string)file_address + "." + date + ".txt");
-                outFile.open((*output_file_path).data());
+                outFile.open((std::string)file_address + "." + date + ".txt");
                 current_date = date;
             }
 
             if (current_date != date) {
                 outFile.close();
-                auto output_file_path = new std::string((std::string)file_address + "." + date + ".txt");
-                outFile.open((*output_file_path).data());
+                outFile.open((std::string)file_address + "." + date + ".txt");
                 current_date = date;
             }
 

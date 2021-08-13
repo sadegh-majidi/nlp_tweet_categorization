@@ -47,11 +47,9 @@ void calc_tweet_vec(const char *file_address, const char *result_file_address) {
         int words_size;
         infile >> words_size;
 
-        for (int j = 0; j < words_size; j++) {
-            std::string temp;
-            infile >> temp;
-            tweet.push_back(temp);
-        }
+        tweet.resize(words_size, "");
+        for (auto &word : tweet)
+            infile >> word;
 
         std::vector<double> v = calc_tweet_mat(tweet);
         if (!v.empty()) {
