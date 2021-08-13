@@ -37,4 +37,6 @@ static const char *cal_tweet_vec_outputs[] = {
 };
 static const int number_of_cal_tweet_vec_files = 1;
 
+static const double median_division_factor = 3;
+
 #endif //NCFINAL_GLOBAL_CONSTANTS_H

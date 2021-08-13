@@ -11,6 +11,9 @@ extern "C" {
 #include "html_decoder/entities.h"
 }
 #include "pairwise_distance.h"
+#include "effective_edges.h"
+#include "effective_hashtags.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -30,10 +33,21 @@ int main() {
 
     for (int i = 0; i < number_of_cal_tweet_vec_files; i++) {
         string input = (string)absolute_path_to_resources + cal_tweet_vec_inputs[i];
+        string input_hashtags = input + ".hashtags";
         string output = (string)absolute_path_to_resources + cal_tweet_vec_outputs[i];
-        calc_tweet_vec(input.data(), output.data());
-        int n = pairwise_distance(output.data());
-        cout << get_median_of_distances(n) << endl;
+        string output_hashtags = output + ".hashtags";
+        int n = calc_tweet_vec(input.data(), input_hashtags.data(), output.data(), output_hashtags.data());
+        pairwise_distance(n, output.data());
+        double sigma = get_median_of_distances(n) / median_division_factor;
+        auto tweet_edges = get_effective_tweet_edges(n, sigma);
+        auto hashtags = get_effective_hashtags(n, output_hashtags.data());
+        vector<string> unique_hashtags;
+        for(const auto &x : hashtags)
+            for(const auto &y : x)
+                unique_hashtags.push_back(y);
+        sort(unique_hashtags.begin(), unique_hashtags.end());
+        unique_hashtags.resize(unique(unique_hashtags.begin(), unique_hashtags.end()) - unique_hashtags.begin());
+//        create_graph(n, tweet_edges, hashtags);
     }
     return 0;
 }

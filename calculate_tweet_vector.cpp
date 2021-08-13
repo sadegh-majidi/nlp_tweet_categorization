@@ -40,14 +40,20 @@ std::vector<double> calc_tweet_mat(const std::vector<std::string>& words) {
         return {};
 }
 
-void calc_tweet_vec(const char *file_address, const char *result_file_address) {
+int calc_tweet_vec(const char *file_address, const char *hashtags_address, const char *result_file_address,
+                    const char *result_hashtags_address) {
     std::ifstream infile(file_address);
+    std::ifstream hashtags_file(hashtags_address);
     std::ofstream outfile(result_file_address);
+    std::ofstream out_hashtags_file(result_hashtags_address);
+    int n = 0;
 
     while (!infile.eof()) {
         std::vector<std::string> tweet;
         int words_size;
         infile >> words_size;
+        std::string hashtags;
+        hashtags_file >> hashtags;
 
         tweet.resize(words_size, "");
         for (auto &word : tweet)
@@ -61,11 +67,16 @@ void calc_tweet_vec(const char *file_address, const char *result_file_address) {
                     outfile << " ";
             }
             outfile << std::endl;
+            out_hashtags_file << hashtags << " ";
+            n++;
         }
         tweet.clear();
         v.clear();
+        hashtags.clear();
     }
     infile.close();
     outfile.close();
+    hashtags_file.close();
 
+    return n;
 }
