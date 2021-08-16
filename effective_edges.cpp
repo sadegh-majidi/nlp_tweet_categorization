@@ -6,11 +6,13 @@
 #include <thread>
 #include <fstream>
 #include <cmath>
+#include <iostream>
 #include "effective_hashtags.h"
 #include "global_constants.h"
 
 
-void calculate_effective_edges(int n, const double &sigma, const std::string &file_path, std::vector<std::tuple<int, int, double>> *edges) {
+void calculate_effective_edges(int n, const double &sigma, const std::string file_path,
+                               std::vector<std::tuple<int, int, double>> *edges) {
     std::ifstream f(file_path);
     int x_start;
     int x_end;
@@ -31,7 +33,7 @@ std::vector<std::tuple<int, int, double>> get_effective_tweet_edges(int n, doubl
     std::vector<std::thread> v;
     for (int i = 0; i < pairwise_distance_threads; i++) {
         std::string file_path = (std::string) pairwise_distance_output_directory_path + (char) ('0' + i);
-        std::thread thread_obj(calculate_effective_edges, n, std::ref(sigma), std::ref(file_path), &edges[i]);
+        std::thread thread_obj(calculate_effective_edges, n, sigma, file_path, &edges[i]);
         v.push_back(move(thread_obj));
     }
 
