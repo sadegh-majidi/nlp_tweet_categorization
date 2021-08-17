@@ -5,7 +5,11 @@
 #ifndef NCFINAL_CALCULATE_TWEET_VECTOR_H
 #define NCFINAL_CALCULATE_TWEET_VECTOR_H
 
-int calc_tweet_vec(const char *file_address, const char *hashtags_address, const char *result_file_address,
-                    const char *result_hashtags_address);
+int calc_tweet_vec(const char *file_address,
+                   const char *ids_address,
+                   const char *hashtags_address,
+                   const char *result_file_address,
+                   const char *result_ids_address,
+                   const char *result_hashtags_address);
 
 #endif //NCFINAL_CALCULATE_TWEET_VECTOR_H

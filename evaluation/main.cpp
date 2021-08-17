@@ -7,6 +7,7 @@
 #include "median_of_distances.h"
 #include "calculate_tweet_vector.h"
 #include "tweet_tokenizer.h"
+#include "graph.h"
 
 extern "C" {
 #include "html_decoder/entities.h"
@@ -14,8 +15,8 @@ extern "C" {
 #include "pairwise_distance.h"
 #include "effective_edges.h"
 #include "effective_hashtags.h"
-#include "export_data.h"
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 
@@ -36,13 +37,10 @@ int main() {
     for (int i = 0; i < number_of_cal_tweet_vec_files; i++) {
         string input = (string)absolute_path_to_resources + cal_tweet_vec_inputs[i];
         string input_ids = input + ".ids";
-        string input_hashtags = input + ".hashtags";
         string output = (string)absolute_path_to_resources + cal_tweet_vec_outputs[i];
         string output_ids = output + ".ids";
-        string output_hashtags = output + ".hashtags";
         cout << "calculating tweet vectors" << endl;
-        int n = calc_tweet_vec(input.data(), input_ids.data(), input_hashtags.data(), output.data(), output_ids.data(),
-                               output_hashtags.data());
+        int n = calc_tweet_vec(input.data(), input_ids.data(), output.data(), output_ids.data());
         cout << "done" << endl;
         cout << "calculating pairwise distances" << endl;
         pairwise_distance(n, output.data());
@@ -52,8 +50,13 @@ int main() {
         cout << "sigma: " << sigma << " done" << endl;
         cout << "generating edges and writing them" << endl;
         auto tweet_edges = get_effective_tweet_edges(n, sigma);
-        auto [hashtags, unique_hashtags] = get_effective_hashtags(n, output_hashtags.data());
-        export_processed_data(output.data(), n, tweet_edges, hashtags, unique_hashtags);
+        ifstream in_ids(output_ids);
+        std::vector<int> id_determiner(n);
+        for(auto &x : id_determiner)
+            in_ids >> x;
+        ofstream out((string)absolute_path_to_resources + "edges_c");
+        for(auto edge : tweet_edges)
+            out << id_determiner[get<0>(edge)] << " " << id_determiner[get<1>(edge)] << " " << get<2>(edge) << endl;
     }
     return 0;
 }
