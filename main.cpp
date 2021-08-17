@@ -7,7 +7,6 @@
 #include "median_of_distances.h"
 #include "calculate_tweet_vector.h"
 #include "tweet_tokenizer.h"
-#include "graph.h"
 
 extern "C" {
 #include "html_decoder/entities.h"
@@ -15,6 +14,7 @@ extern "C" {
 #include "pairwise_distance.h"
 #include "effective_edges.h"
 #include "effective_hashtags.h"
+#include "export_data.h"
 #include <algorithm>
 
 using namespace std;
@@ -52,6 +52,8 @@ int main() {
         cout << "sigma: " << sigma << " done" << endl;
         cout << "generating edges and writing them" << endl;
         auto tweet_edges = get_effective_tweet_edges(n, sigma);
+        auto [hashtags, unique_hashtags] = get_effective_hashtags(n, output_hashtags.data());
+        export_processed_data(output.data(), n, tweet_edges, hashtags, unique_hashtags);
     }
     return 0;
 }
