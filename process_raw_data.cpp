@@ -70,7 +70,7 @@ void process_raw_data(const char *file_address) {
     static const vector<string> arr = {"date", "content", "id", "hashtag"};
     csv::CSVReader in(file_address);
     std::ofstream outFile;
-    std::ofstream out_hashtag_file;
+    std::ofstream out_ids_file;
     std::string current_date;
 
     for (auto &row : in) {
@@ -82,15 +82,15 @@ void process_raw_data(const char *file_address) {
             std::string date = (std::string)row["date"].get<string_view>();
             if (!outFile) {
                 outFile.open((std::string)file_address + "." + date + ".txt");
-                out_hashtag_file.open((std::string)file_address + "." + date + ".txt.hashtags");
+                out_ids_file.open((std::string)file_address + "." + date + ".txt.ids");
                 current_date = date;
             }
 
             if (current_date != date) {
                 outFile.close();
-                out_hashtag_file.close();
+                out_ids_file.close();
                 outFile.open((std::string)file_address + "." + date + ".txt");
-                out_hashtag_file.open((std::string)file_address + "." + date + ".txt.hashtags");
+                out_ids_file.open((std::string)file_address + "." + date + ".txt.ids");
                 current_date = date;
             }
 
@@ -102,9 +102,9 @@ void process_raw_data(const char *file_address) {
             for(auto &word : non_stop_words)
                 outFile << " " << word;
             outFile << std::endl;
-            out_hashtag_file << row["hashtag"].get<string_view>() << " ";
+            out_ids_file << row[""].get<string_view>() << std::endl;
         }
     }
     outFile.close();
-    out_hashtag_file.close();
+    out_ids_file.close();
 }

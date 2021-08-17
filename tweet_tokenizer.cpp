@@ -35,7 +35,7 @@ string SIMPLE_WORD = "(?:[\\w_]+)";
 
 string ELLIPSIS = R"((?:\.(?:\s*\.){1,}))";
 
-string EXTRA = "(?:\\S)";
+string EXTRA = R"((?:(?:(?=\S)(?:[\x00-\x7F]))|(?:[^\x00-\x7F]+)))";
 
 string URLS = R"(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*))";
 
@@ -45,7 +45,7 @@ string bad_pattern = "([^a-zA-Z0-9])\\1{3,}";
 
 
 vector<string> WORD_RE{URLS, PHONE_NUMBER, EMOTICONS, HTML_TAGS, ASCII_ARROWS, TWITTER_USERNAME, TWITTER_HASHTAG,
-                       EMAIL_ADDRESS, WORD_WITH_DASH_AND_APOSTROPHE, NUMBERS, SIMPLE_WORD, ELLIPSIS};
+                       EMAIL_ADDRESS, WORD_WITH_DASH_AND_APOSTROPHE, NUMBERS, SIMPLE_WORD, ELLIPSIS, EXTRA};
 
 void initialize_tweet_tokenizer() {
     string WORD_PATTERN;
@@ -84,8 +84,8 @@ string reduce_lengthening(string text, const string &pattern) {
 vector<string> find_word(string text) {
     vector<string> result;
 
-    std::regex_iterator<std::string::iterator> rit(text.begin(), text.end(), WORD_REGEX);
-    std::regex_iterator<std::string::iterator> rend;
+    std::regex_token_iterator<std::string::iterator> rit(text.begin(), text.end(), WORD_REGEX);
+    std::regex_token_iterator<std::string::iterator> rend;
 
     while (rit != rend) {
         result.push_back(rit->str());

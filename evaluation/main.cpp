@@ -16,6 +16,7 @@ extern "C" {
 #include "effective_edges.h"
 #include "effective_hashtags.h"
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 
@@ -49,6 +50,13 @@ int main() {
         cout << "sigma: " << sigma << " done" << endl;
         cout << "generating edges and writing them" << endl;
         auto tweet_edges = get_effective_tweet_edges(n, sigma);
+        ifstream in_ids(output_ids);
+        std::vector<int> id_determiner(n);
+        for(auto &x : id_determiner)
+            in_ids >> x;
+        ofstream out((string)absolute_path_to_resources + "edges_c");
+        for(auto edge : tweet_edges)
+            out << id_determiner[get<0>(edge)] << " " << id_determiner[get<1>(edge)] << " " << get<2>(edge) << endl;
     }
     return 0;
 }
