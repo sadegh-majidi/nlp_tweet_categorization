@@ -16,7 +16,7 @@
 #include "cmath"
 
 
-void calculate_min_max(int n, const std::string &file_path, std::vector<double> &s) {
+void calculate_min_max(int n, const std::string file_path, std::vector<double> &s) {
     std::ifstream f(file_path);
     int x_start;
     int x_end;
