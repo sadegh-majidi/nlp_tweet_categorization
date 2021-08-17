@@ -36,10 +36,13 @@ int main() {
     for (int i = 0; i < number_of_cal_tweet_vec_files; i++) {
         string input = (string)absolute_path_to_resources + cal_tweet_vec_inputs[i];
         string input_ids = input + ".ids";
+        string input_hashtags = input + ".hashtags";
         string output = (string)absolute_path_to_resources + cal_tweet_vec_outputs[i];
         string output_ids = output + ".ids";
+        string output_hashtags = output + ".hashtags";
         cout << "calculating tweet vectors" << endl;
-        int n = calc_tweet_vec(input.data(), input_ids.data(), output.data(), output_ids.data());
+        int n = calc_tweet_vec(input.data(), input_ids.data(), input_hashtags.data(), output.data(), output_ids.data(),
+                               output_hashtags.data());
         cout << "done" << endl;
         cout << "calculating pairwise distances" << endl;
         pairwise_distance(n, output.data());
