@@ -62,6 +62,10 @@ for m in range(len(input_graph_files)):
         for node1, node2 in list(gg.edges()):
             new_gg.add_edge(names_dict[node1], names_dict[node2])
 
+        for i in names_dict:
+            if new_gg.has_node(names_dict[i]):
+                new_gg.nodes[names_dict[i]]['name'] = i
+
         communitymodel = EdMot()
 
         communitymodel.fit(new_gg)
@@ -71,7 +75,7 @@ for m in range(len(input_graph_files)):
         idx_community = communitymodel.get_memberships()
         d1 = dict()
         for i in range(len(new_gg.nodes())):
-            d1[i] = (i, idx_community[i] + num_old_communities)
+            d1[new_gg.nodes[i]['name']] = (i, idx_community[i] + num_old_communities)
 
         ss = list()
         for i in idx_community:
